@@ -18,7 +18,7 @@ class PortfolioElement:
 
         yf_symbol= hole_yf_symbol(isin)
         if yf_symbol is None:
-            raise ValueError(f"Kein YF-Symbol für ISIN {isin} gefunden.")
+            raise ValueError(f"Kein Yahoo Finance-Symbol für ISIN {isin} gefunden.")
 
         self.ticker = yfinance.Ticker(yf_symbol)
         ticker_waehrung = self.ticker.info.get("currency")
@@ -30,6 +30,7 @@ class PortfolioElement:
   
     def update(self) -> None:
         self.kurs_aktuell = self.ticker.info["regularMarketPrice"]
+        self.kurs_schluss = self.ticker.info["previousClose"]
         self.kurs_eroeffung = self.ticker.info["regularMarketOpen"]
         self.kurs_hoch = self.ticker.info["regularMarketDayHigh"]
         self.kurs_tief = self.ticker.info["regularMarketDayLow"]
@@ -41,11 +42,12 @@ class PortfolioElement:
     def info(self) -> None:
         print(f"ISIN: {self.isin}")
         print(f"Name: {self.name}")
-        print(f"Währing: {self.waehrung}")
+        print(f"Währung: {self.waehrung}")
         print(f"Stueckzahl: {self.stueckzahl}")
         print(f"Beobachtungskurs: {self.kurs_beobachtung}")
         print(f"Aktueller Kurs: {self.kurs_aktuell}")
-        print(f"Kursänderung: {self.kurs_aenderung} ({self.kurs_aenderung_prozent}%)")
+        print(f"Kursänderung: {self.kurs_aenderung} ({self.kurs_aenderung_prozent:.2f}%)")
+        print(f"Schlusskurs: {self.kurs_schluss}")
         print(f"Eröffnungskurs: {self.kurs_eroeffung}")
         print(f"Tageshoch: {self.kurs_hoch}")
         print(f"Tiefstkurs: {self.kurs_tief}")
@@ -54,5 +56,5 @@ class PortfolioElement:
 
 if __name__ == "__main__":
 
-    element = PortfolioElement(isin="US0378331005", stueckzahl=10, kurs_beobachtung=150.0, waehrung="USD")
+    element = PortfolioElement(isin="DE0007030009", stueckzahl=10, kurs_beobachtung=150.0)
     element.info()
