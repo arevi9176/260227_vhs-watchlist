@@ -1,3 +1,19 @@
+"""
+Die ISIN (International Securities Identification Number) ist ein weltweit einheitlicher, zwölf-
+telliger alphanumerischer Code zur eindeutigen Identifizierung von Wertpapieren (Aktien, Anleihen, Fonds).
+Sie dient der Standardisierung im internationalen Börsenhandel, besteht aus
+ - Länderkennung
+ - nationalem Code
+ - Prüfziffer
+
+Aufbau:
+Ländercode (2 Stellen):  Repräsentiert das Land des Emittenten (z.B. "DE" für Deutschland, "US" für USA).
+Basisnummer (9 Stellen): Identifiziert das Wertpapier spezifisch (oft basierend auf der nationalen Kennnummer).
+Prüfziffer (1 Stelle):   Dient der Validierung.
+
+Jedes Wertpapier hat eine eigene, unverwechselbare ISIN.
+"""
+
 DAX = {
     "adidas": "DE000A1EWWW0",
     "Airbus": "NL0000235190",
