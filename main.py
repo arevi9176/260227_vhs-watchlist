@@ -38,7 +38,7 @@ class PortfolioElement:
         self.wert_aktuell = self.stueckzahl * self.kurs_aktuell
 
         # Tageswertentwicklung: Differenz zwischen aktuellem Kurs und Schlusskurs
-        self.wertenwicklung_tag = self.ticker.info["regularMarketChange"] * self.stueckzahl
+        self.wertenwicklung_tag = self.ticker.info["regularMarketChange"]
         self.wertenwicklung_tag_prozent = self.ticker.info["regularMarketChangePercent"]
 
         # Gesamtwertentwicklung: Differenz zwischen aktuellem Wert und Beobachtungswert
@@ -84,7 +84,7 @@ class PortfolioManager:
             element.update()
             self.portfolio_wert_beobachtung += element.wert_beobachtung
             self.portfolio_wert_aktuell += element.wert_aktuell
-            self.portfolio_wertenwicklung_tag += element.wertenwicklung_tag
+            self.portfolio_wertenwicklung_tag += (element.wertenwicklung_tag  * element.stueckzahl)
 
         self.portfolio_wertenwicklung_tag_prozent = self.portfolio_wertenwicklung_tag / self.portfolio_wert_aktuell * 100
         self.portfolio_wertenwicklung_gesamt = self.portfolio_wert_aktuell - self.portfolio_wert_beobachtung
