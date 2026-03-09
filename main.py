@@ -47,19 +47,20 @@ class PortfolioElement:
 
 
     def info(self) -> None:
-        print(f"            ISIN: {self.isin}")
-        print(f"            Name: {self.name}")
-        print(f"         Währung: {self.waehrung}")
-        print(f"      Stueckzahl: {self.stueckzahl}")
-        print(f"Beobachtungskurs: {self.kurs_beobachtung}")
-        print(f"  Aktueller Kurs: {self.kurs_aktuell}")
-        print(f"    Kursänderung: {self.wertenwicklung_tag:.2f} ({self.wertenwicklung_tag_prozent:.2f}%)")
-        print(f"     Schlusskurs: {self.kurs_schluss}")
-        print(f"  Eröffnungskurs: {self.kurs_eroeffung}")
-        print(f"       Tageshoch: {self.kurs_hoch}")
-        print(f"       Tagestief: {self.kurs_tief}")
-        print(f"  52 Wochen Hoch: {self.kurs_52wochen_hoch}")
-        print(f"  52 Wochen Tief: {self.kurs_52wochen_tief}")
+        print(f"              ISIN: {self.isin}")
+        print(f"              Name: {self.name}")
+        print(f"           Währung: {self.waehrung}")
+        print(f"        Stueckzahl: {self.stueckzahl}")
+        print(f"  Beobachtungskurs: {self.kurs_beobachtung}")
+        print(f"       Schlusskurs: {self.kurs_schluss}")
+        print(f"    Aktueller Kurs: {self.kurs_aktuell}")
+        print(f"      Kursänderung: {self.wertenwicklung_tag:.2f} ({self.wertenwicklung_tag_prozent:.2f}%)")
+        print(f"    Eröffnungskurs: {self.kurs_eroeffung}")
+        print(f"         Tageshoch: {self.kurs_hoch}")
+        print(f"         Tagestief: {self.kurs_tief}")
+        print(f"    52 Wochen Hoch: {self.kurs_52wochen_hoch}")
+        print(f"    52 Wochen Tief: {self.kurs_52wochen_tief}")
+        print(f"Gesamtkursänderung: {self.wertenwicklung_gesamt:.2f} ({self.wertenwicklung_gesamt_prozent:.2f}%)")
 
 
 class PortfolioManager:
@@ -93,12 +94,13 @@ class PortfolioManager:
     def info(self) -> None:
         self.update()
         print(f"\nPortfolio: {self.name}:\n")
-        print("Name                        Anzahl  Beobachtungskurs   Aktueller Kurs   WE-Tag (%)   WE-Gesamt (%)")
-        print("                           Währung  Beobachtungswert   Aktueller Wert   WE-Tag abs   WE-Gesamt abs")
+        print("Name                Anzahl  Währung         BK         BW         AK         AW    WE-Tag  WE-Tag  WE-Gesamt  WE-Gesamt")
         for el in self.elements:
-            print(f"{el.name:25}{' '*4}{el.stueckzahl:5.1f}{' '*12}{el.kurs_beobachtung:6.2f}{' '*9}{el.kurs_aktuell:8.2f}{' '*7}{el.wertenwicklung_tag_prozent:6.2f}{' '*7}{el.wertenwicklung_gesamt_prozent:8.2f}")
-            print(f"{' '*29}[{el.waehrung:3}]{' '*10}{el.wert_beobachtung:8.2f}{' '*9}{el.wert_aktuell:8.2f}{' '*7}{el.wertenwicklung_tag:6.2f}{' '*7}{el.wertenwicklung_gesamt:8.2f}")
-
+             print(
+                f"{el.name:20} {el.stueckzahl:5.1f} {el.waehrung:>8} {el.kurs_beobachtung:10.2f} {el.wert_beobachtung:10.2f}"
+                f" {el.kurs_aktuell:10.2f} {el.wert_aktuell:10.2f} {el.wertenwicklung_tag:9.2f} {el.wertenwicklung_tag_prozent:6.1f}%"
+                f" {el.wertenwicklung_gesamt:10.2f} {el.wertenwicklung_gesamt_prozent:9.2f}%"
+            )
         print()
         print(f"Portfolio Gesamtwert Beobachtung: {self.portfolio_wert_beobachtung:.2f} {el.waehrung}")
         print(f"    Portfolio Gesamtwert Aktuell: {self.portfolio_wert_aktuell:.2f} {el.waehrung}")
@@ -107,10 +109,16 @@ class PortfolioManager:
 
 if __name__ == "__main__":
 
-
     pe1 = PortfolioElement("DE000A1EWWW0", 20, 140.0)      # adidas
     pe2 = PortfolioElement("DE000BASF111", 20, 55.0)       # BASF
     pe3 = PortfolioElement("DE0007164600", 32, 180.0)      # SAP
     pe4 = PortfolioElement("DE000CBK1001", 100, 25.0)      # Commerzbank
 
     pe1.info()
+
+    portfolio = PortfolioManager("Mein Portfolio")
+    portfolio.add(pe1)
+    portfolio.add(pe2)
+    portfolio.add(pe3)
+    portfolio.add(pe4)
+    portfolio.info()
