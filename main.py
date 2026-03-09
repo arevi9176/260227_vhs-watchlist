@@ -1,35 +1,49 @@
 import yfinance
 
-class PortfolioElement:
-    """Repräsentiert ein Element im Portfolio, z.B. eine Aktie oder einen Fonds."""
+def hole_wechselkurs(waehrung):
+    """Gibt den aktuellen Wechselkurs von der angegebenen Währung zu EUR zurück."""
+    ticker_symbol = f"{waehrung}EUR=X"
+    ticker = yfinance.Ticker(ticker_symbol)
+    
+    # Abruf des aktuellsten Preises (Last Price)
+    wechselkurs = ticker.fast_info['last_price']
+    return wechselkurs
 
-    def __init__(self, isin: str, stueckzahl: float, kurs_beobachtung:float, waehrung:str="EUR"):
+
+class PortfolioElement:
+    """Repräsentiert ein Element im Portfolio, z.B. eine Aktie oder einen Fonds.
+       Der Beobachtungskurs muss in EUR angegeben werden.
+    """
+
+    def __init__(self, isin: str, stueckzahl: float, kurs_beobachtung:float):
 
         self.isin = isin
         self.stueckzahl = stueckzahl
         self.kurs_beobachtung = kurs_beobachtung
-        self.waehrung = waehrung
-
+   
         try:
             self.ticker = yfinance.Ticker(isin)
         except Exception as e:
             raise ValueError(f"Fehler beim Abrufen des Tickers für ISIN {isin}: {e}")
         
         ticker_waehrung = self.ticker.info.get("currency")
-        if ticker_waehrung != self.waehrung:
-            raise ValueError(f"ISIN: {isin} -> Angegebene Währung {waehrung} stimmt nicht mit der Währung des Tickers {ticker_waehrung} überein.")
+        self.waehrung = ticker_waehrung
+        if self.waehrung == "EUR":
+            self.wecheselkurs = 1.0
+        else:
+            self.wecheselkurs = hole_wechselkurs(self.waehrung)
 
         self.name = self.ticker.info["longName"]
         self.update()
   
     def update(self) -> None:
-        self.kurs_aktuell = self.ticker.info["regularMarketPrice"]
-        self.kurs_schluss = self.ticker.info["previousClose"]
-        self.kurs_eroeffung = self.ticker.info["regularMarketOpen"]
-        self.kurs_hoch = self.ticker.info["regularMarketDayHigh"]
-        self.kurs_tief = self.ticker.info["regularMarketDayLow"]
-        self.kurs_52wochen_hoch = self.ticker.info["fiftyTwoWeekHigh"]
-        self.kurs_52wochen_tief = self.ticker.info["fiftyTwoWeekLow"]
+        self.kurs_aktuell = self.ticker.info["regularMarketPrice"] * self.wecheselkurs
+        self.kurs_schluss = self.ticker.info["previousClose"] * self.wecheselkurs
+        self.kurs_eroeffung = self.ticker.info["regularMarketOpen"] * self.wecheselkurs
+        self.kurs_hoch = self.ticker.info["regularMarketDayHigh"] * self.wecheselkurs
+        self.kurs_tief = self.ticker.info["regularMarketDayLow"] * self.wecheselkurs
+        self.kurs_52wochen_hoch = self.ticker.info["fiftyTwoWeekHigh"] * self.wecheselkurs
+        self.kurs_52wochen_tief = self.ticker.info["fiftyTwoWeekLow"] * self.wecheselkurs
 
         # Beobachtungswert: Gesamtwert der im Besitz befindlichen Wertpapiere zum Beobachtungskurs
         self.wert_beobachtung = self.stueckzahl * self.kurs_beobachtung
@@ -102,10 +116,10 @@ class PortfolioManager:
                 f" {el.wertenwicklung_gesamt:10.2f} {el.wertenwicklung_gesamt_prozent:9.2f}%"
             )
         print()
-        print(f"Portfolio Gesamtwert Beobachtung: {self.portfolio_wert_beobachtung:.2f} {el.waehrung}")
-        print(f"    Portfolio Gesamtwert Aktuell: {self.portfolio_wert_aktuell:.2f} {el.waehrung}")
-        print(f"Portfolio Wertentwicklung Gesamt: {self.portfolio_wertenwicklung_gesamt:.2f} {el.waehrung} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
-        print(f"   Portfolio Wertentwicklung Tag: {self.portfolio_wertenwicklung_tag:.2f} {el.waehrung} ({self.portfolio_wertenwicklung_tag_prozent:.2f}%)")
+        print(f"Portfolio Beobachtungsgesamtwert [EUR]: {self.portfolio_wert_beobachtung:10.2f}")
+        print(f"  Portfolio aktueller Gesamtwert [EUR]: {self.portfolio_wert_aktuell:10.2f}")
+        print(f" Portfolio Gesamtwertentwicklung [EUR]: {self.portfolio_wertenwicklung_gesamt:10.2f} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
+        print(f"  Portfolio Tageswertentwicklung [EUR]: {self.portfolio_wertenwicklung_tag:10.2f} ({self.portfolio_wertenwicklung_tag_prozent:.2f}%)")
 
 if __name__ == "__main__":
 
@@ -113,6 +127,7 @@ if __name__ == "__main__":
     pe2 = PortfolioElement("DE000BASF111", 20, 55.0)       # BASF
     pe3 = PortfolioElement("DE0007164600", 32, 180.0)      # SAP
     pe4 = PortfolioElement("DE000CBK1001", 100, 25.0)      # Commerzbank
+    pe5 = PortfolioElement("US0378331005", 50, 30.0)      # Apple
 
     pe1.info()
 
@@ -121,4 +136,5 @@ if __name__ == "__main__":
     portfolio.add(pe2)
     portfolio.add(pe3)
     portfolio.add(pe4)
+    portfolio.add(pe5)
     portfolio.info()
