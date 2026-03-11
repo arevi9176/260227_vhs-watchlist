@@ -3,8 +3,8 @@ Rudimentäre Watchlist für Wertpapiere auf Basis von Yahoo Finance.
 Verbesserungspotential:
 
 - Verwendung von unterschiedlichen Währungen
-- Initialisierung PM mit Liste von Portfolioelementen (optional)
-- Verbesserte Terminaldarstellung (Farbe, Tabellenlayout)
+- Verbesserte Terminaldarstellung (Farbe, Tabellenlayout) mit Hilfe des Rich package (uv add rich)
+- Persistenz (Laden- und Speichern von Portfoliozusammenstellungen)
+- Initialisierung PM mit Liste von Portfolioelementen
 - Kommandozeileninterface
 - Webinterface
-- Persistenz (Laden- und Speichern von Portfoliozusammenstellungen)
