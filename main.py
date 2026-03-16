@@ -1,4 +1,8 @@
 import yfinance
+from rich.console import Console
+from rich.table import Table
+from rich import box
+
 
 def hole_wechselkurs(waehrung):
     """Gibt den aktuellen Wechselkurs von der angegebenen Währung zu EUR zurück."""
@@ -107,15 +111,33 @@ class PortfolioManager:
 
     def info(self) -> None:
         self.update()
-        print(f"\nPortfolio: {self.name}:\n")
-        print("Name                Anzahl  Währung         BK         BW         AK         AW    WE-Tag  WE-Tag  WE-Gesamt  WE-Gesamt")
+        table = Table(title=self.name, box=box.HEAVY_EDGE)
+        table.add_column("Name", justify="left", style="cyan", no_wrap=True)
+        table.add_column("Anzahl", justify="right", style="magenta")
+        table.add_column("Währung", justify="right", style="green")
+        table.add_column("BK", justify="right", style="yellow")
+        table.add_column("BW", justify="right", style="yellow")
+        table.add_column("AK", justify="right", style="yellow")
+        table.add_column("AW", justify="right", style="yellow")
+        table.add_column("WE-Tag", justify="right")
+        table.add_column("WE-Tag %", justify="right")
+        table.add_column("WE-Gesamt", justify="right")
+        table.add_column("WE-Gesamt %", justify="right")
         for el in self.elements:
-             print(
-                f"{el.name:20} {el.stueckzahl:5.1f} {el.waehrung:>8} {el.kurs_beobachtung:10.2f} {el.wert_beobachtung:10.2f}"
-                f" {el.kurs_aktuell:10.2f} {el.wert_aktuell:10.2f} {el.wertenwicklung_tag:9.2f} {el.wertenwicklung_tag_prozent:6.1f}%"
-                f" {el.wertenwicklung_gesamt:10.2f} {el.wertenwicklung_gesamt_prozent:9.2f}%"
+            we_tag_color = "red" if el.wertenwicklung_tag < 0 else "green"
+            we_tag_prz_color = "red" if el.wertenwicklung_tag_prozent < 0 else "green"
+            we_gesamt_color = "red" if el.wertenwicklung_gesamt < 0 else "green"
+            we_gesamt_prz_color = "red" if el.wertenwicklung_gesamt_prozent < 0 else "green"
+            table.add_row(
+                el.name, f"{el.stueckzahl:.1f}", el.waehrung, f"{el.kurs_beobachtung:.2f}", f"{el.wert_beobachtung:.2f}",
+                f"{el.kurs_aktuell:.2f}", f"{el.wert_aktuell:.2f}",
+                f"[{we_tag_color}]{el.wertenwicklung_tag:.2f}[/{we_tag_color}]",
+                f"[{we_tag_prz_color}]{el.wertenwicklung_tag_prozent:.1f}%[/{we_tag_prz_color}]",
+                f"[{we_gesamt_color}]{el.wertenwicklung_gesamt:.2f}[/{we_gesamt_color}]",
+                f"[{we_gesamt_prz_color}]{el.wertenwicklung_gesamt_prozent:.2f}%[/{we_gesamt_prz_color}]"
             )
-        print()
+        console = Console()
+        console.print(table)
         print(f"Portfolio Beobachtungsgesamtwert [EUR]: {self.portfolio_wert_beobachtung:10.2f}")
         print(f"  Portfolio aktueller Gesamtwert [EUR]: {self.portfolio_wert_aktuell:10.2f}")
         print(f" Portfolio Gesamtwertentwicklung [EUR]: {self.portfolio_wertenwicklung_gesamt:10.2f} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
