@@ -9,3 +9,8 @@ dependencies = [
     "rich>=14.3.3",
     "yfinance>=1.2.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+]
