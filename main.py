@@ -149,7 +149,7 @@ if __name__ == "__main__":
     pe2 = PortfolioElement("DE000BASF111", 20, 55.0)       # BASF
     pe3 = PortfolioElement("DE0007164600", 32, 180.0)      # SAP
     pe4 = PortfolioElement("DE000CBK1001", 100, 25.0)      # Commerzbank
-    pe5 = PortfolioElement("US0378331005", 50, 30.0)      # Apple
+    pe5 = PortfolioElement("US0378331005", 50, 30.0)       # Apple
 
     pe1.info()
 
