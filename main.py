@@ -121,17 +121,18 @@ class PortfolioManager:
         print(f" Portfolio Gesamtwertentwicklung [EUR]: {self.portfolio_wertenwicklung_gesamt:10.2f} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
         print(f"  Portfolio Tageswertentwicklung [EUR]: {self.portfolio_wertenwicklung_tag:10.2f} ({self.portfolio_wertenwicklung_tag_prozent:.2f}%)")
 
+
 if __name__ == "__main__":
 
     pe1 = PortfolioElement("DE000A1EWWW0", 20, 140.0)      # adidas
     pe2 = PortfolioElement("DE000BASF111", 20, 55.0)       # BASF
     pe3 = PortfolioElement("DE0007164600", 32, 180.0)      # SAP
     pe4 = PortfolioElement("DE000CBK1001", 100, 25.0)      # Commerzbank
-    pe5 = PortfolioElement("US0378331005", 50, 30.0)      # Apple
+    pe5 = PortfolioElement("US0378331005", 50, 30.0)       # Apple
 
     pe1.info()
 
-    portfolio = PortfolioManager("Mein Portfolio")
+    portfolio = PortfolioManager("Basis")
     portfolio.add(pe1)
     portfolio.add(pe2)
     portfolio.add(pe3)
