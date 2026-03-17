@@ -77,64 +77,9 @@ class PortfolioElement:
         print(f"Gesamtkursänderung: {self.wertenwicklung_gesamt:.2f} ({self.wertenwicklung_gesamt_prozent:.2f}%)")
 
 
-class PortfolioManager:
-    """Verwaltet das Portfolio, z.B. durch Hinzufügen von Elementen und Berechnung von Kennzahlen."""
-
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self.elements = []
-
-    def add(self, element: PortfolioElement) -> None:
-        self.elements.append(element)
-
-    def update(self) -> None:
-        self.portfolio_wert_beobachtung = 0
-        self.portfolio_wert_aktuell = 0
-        self.portfolio_wertenwicklung_gesamt = 0
-        self.portfolio_wertenwicklung_gesamt_prozent = 0
-        self.portfolio_wertenwicklung_tag = 0
-        self.portfolio_wertenwicklung_tag_prozent = 0
-
-        for element in self.elements:
-            element.update()
-            self.portfolio_wert_beobachtung += element.wert_beobachtung
-            self.portfolio_wert_aktuell += element.wert_aktuell
-            self.portfolio_wertenwicklung_tag += (element.wertenwicklung_tag  * element.stueckzahl)
-
-        self.portfolio_wertenwicklung_tag_prozent = self.portfolio_wertenwicklung_tag / self.portfolio_wert_aktuell * 100
-        self.portfolio_wertenwicklung_gesamt = self.portfolio_wert_aktuell - self.portfolio_wert_beobachtung
-        self.portfolio_wertenwicklung_gesamt_prozent = self.portfolio_wertenwicklung_gesamt / self.portfolio_wert_beobachtung * 100
-
-    def info(self) -> None:
-        self.update()
-        print(f"\nPortfolio: {self.name}:\n")
-        print("Name                Anzahl  Währung         BK         BW         AK         AW    WE-Tag  WE-Tag  WE-Gesamt  WE-Gesamt")
-        for el in self.elements:
-             print(
-                f"{el.name:20} {el.stueckzahl:5.1f} {el.waehrung:>8} {el.kurs_beobachtung:10.2f} {el.wert_beobachtung:10.2f}"
-                f" {el.kurs_aktuell:10.2f} {el.wert_aktuell:10.2f} {el.wertenwicklung_tag:9.2f} {el.wertenwicklung_tag_prozent:6.1f}%"
-                f" {el.wertenwicklung_gesamt:10.2f} {el.wertenwicklung_gesamt_prozent:9.2f}%"
-            )
-        print()
-        print(f"Portfolio Beobachtungsgesamtwert [EUR]: {self.portfolio_wert_beobachtung:10.2f}")
-        print(f"  Portfolio aktueller Gesamtwert [EUR]: {self.portfolio_wert_aktuell:10.2f}")
-        print(f" Portfolio Gesamtwertentwicklung [EUR]: {self.portfolio_wertenwicklung_gesamt:10.2f} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
-        print(f"  Portfolio Tageswertentwicklung [EUR]: {self.portfolio_wertenwicklung_tag:10.2f} ({self.portfolio_wertenwicklung_tag_prozent:.2f}%)")
-
 if __name__ == "__main__":
 
     pe1 = PortfolioElement("DE000A1EWWW0", 20, 140.0)      # adidas
     pe2 = PortfolioElement("DE000BASF111", 20, 55.0)       # BASF
-    pe3 = PortfolioElement("DE0007164600", 32, 180.0)      # SAP
-    pe4 = PortfolioElement("DE000CBK1001", 100, 25.0)      # Commerzbank
-    pe5 = PortfolioElement("US0378331005", 50, 30.0)      # Apple
 
     pe1.info()
-
-    portfolio = PortfolioManager("Mein Portfolio")
-    portfolio.add(pe1)
-    portfolio.add(pe2)
-    portfolio.add(pe3)
-    portfolio.add(pe4)
-    portfolio.add(pe5)
-    portfolio.info()
