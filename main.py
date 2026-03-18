@@ -25,22 +25,18 @@ class PortfolioElement:
         self.stueckzahl = stueckzahl
         self.kurs_beobachtung = kurs_beobachtung
    
-        try:
-            self.ticker = yfinance.Ticker(isin)
-        except Exception as e:
-            raise ValueError(f"Fehler beim Abrufen des Tickers für ISIN {isin}: {e}")
-        
-        ticker_waehrung = self.ticker.info.get("currency")
-        self.waehrung = ticker_waehrung
-        if self.waehrung == "EUR":
-            self.wecheselkurs = 1.0
-        else:
-            self.wecheselkurs = hole_wechselkurs(self.waehrung)
+        self.ticker = yfinance.Ticker(isin)
 
+        try:
+            self.waehrung = self.ticker.info["currency"]
+        except Exception as e:
+            raise ValueError(f"Fehler beim Abrufen der Währung für ISIN {isin}: {e}")
+   
         self.name = self.ticker.info["longName"]
         self.update()
   
     def update(self) -> None:
+        self.wecheselkurs = hole_wechselkurs(self.waehrung)
         self.kurs_aktuell = self.ticker.info["regularMarketPrice"] * self.wecheselkurs
         self.kurs_schluss = self.ticker.info["previousClose"] * self.wecheselkurs
         self.kurs_eroeffung = self.ticker.info["regularMarketOpen"] * self.wecheselkurs
@@ -129,7 +125,8 @@ class PortfolioManager:
             we_gesamt_color = "red" if el.wertenwicklung_gesamt < 0 else "green"
             we_gesamt_prz_color = "red" if el.wertenwicklung_gesamt_prozent < 0 else "green"
             table.add_row(
-                el.name, f"{el.stueckzahl:.1f}", el.waehrung, f"{el.kurs_beobachtung:.2f}", f"{el.wert_beobachtung:.2f}",
+                el.name,
+                f"{el.stueckzahl:.1f}", el.waehrung, f"{el.kurs_beobachtung:.2f}", f"{el.wert_beobachtung:.2f}",
                 f"{el.kurs_aktuell:.2f}", f"{el.wert_aktuell:.2f}",
                 f"[{we_tag_color}]{el.wertenwicklung_tag:.2f}[/{we_tag_color}]",
                 f"[{we_tag_prz_color}]{el.wertenwicklung_tag_prozent:.1f}%[/{we_tag_prz_color}]",
@@ -150,8 +147,6 @@ if __name__ == "__main__":
     pe3 = PortfolioElement("DE0007164600", 32, 180.0)      # SAP
     pe4 = PortfolioElement("DE000CBK1001", 100, 25.0)      # Commerzbank
     pe5 = PortfolioElement("US0378331005", 50, 30.0)       # Apple
-
-    pe1.info()
 
     portfolio = PortfolioManager("Mein Portfolio")
     portfolio.add(pe1)
