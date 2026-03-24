@@ -1,4 +1,5 @@
 import yfinance
+import json
 from rich.console import Console
 from rich.table import Table
 from rich import box
@@ -140,6 +141,25 @@ class PortfolioManager:
         print(f" Portfolio Gesamtwertentwicklung [EUR]: {self.portfolio_wertenwicklung_gesamt:10.2f} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
         print(f"  Portfolio Tageswertentwicklung [EUR]: {self.portfolio_wertenwicklung_tag:10.2f} ({self.portfolio_wertenwicklung_tag_prozent:.2f}%)")
 
+    def load(self, filename: str) -> None:
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        for isin, details in data.items():
+            pe = PortfolioElement(isin, details["stueckzahl"], details["kurs_beobachtung"])
+            self.add(pe)
+
+    def save(self, filename: str) -> None:
+        data = {}
+        for element in self.elements:
+            data[element.isin] = {
+                "name": element.name,
+                "stueckzahl": element.stueckzahl,
+                "kurs_beobachtung": element.kurs_beobachtung
+            }
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=4)
+
+
 if __name__ == "__main__":
 
     pe1 = PortfolioElement("DE000A1EWWW0", 20, 140.0)      # adidas
@@ -149,9 +169,10 @@ if __name__ == "__main__":
     pe5 = PortfolioElement("US0378331005", 50, 30.0)       # Apple
 
     portfolio = PortfolioManager("Mein Portfolio")
-    portfolio.add(pe1)
-    portfolio.add(pe2)
-    portfolio.add(pe3)
-    portfolio.add(pe4)
-    portfolio.add(pe5)
+    # portfolio.add(pe1)
+    # portfolio.add(pe2)
+    # portfolio.add(pe3)
+    # portfolio.add(pe4)
+    # portfolio.add(pe5)
+    portfolio.load("portfolio.json")
     portfolio.info()

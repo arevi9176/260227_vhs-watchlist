@@ -56,3 +56,7 @@ DAX = {
     "Vonovia": "DE000A1ML7J1",
     "Zalando": "DE000ZAL1111"
 }
+
+ETF = {
+    "EUNL.DE": "iShares Core MSCI World UCITS ETF USD (Acc)",
+}
