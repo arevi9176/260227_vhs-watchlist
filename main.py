@@ -87,6 +87,9 @@ class PortfolioManager:
     def add(self, element: PortfolioElement) -> None:
         self.elements.append(element)
 
+    def load_from_json(self, filename: str) -> None:
+        pass  # Hier könnte die Logik zum Laden von Portfolio-Elementen aus einer JSON-Datei implementiert werden
+
     def update(self) -> None:
         self.portfolio_wert_beobachtung = 0
         self.portfolio_wert_aktuell = 0
