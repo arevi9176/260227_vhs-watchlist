@@ -1,14 +1,14 @@
 import yfinance as yf
 import plotext as plt
 
-ISIN = 'EUNL.DE'
+ISIN = 'IE00B4L5Y983'
 
-plt.date_form('d/m/Y')
-
-data = yf.Ticker(ISIN).history(start='2025-12-01')
+data = yf.Ticker(ISIN).history(start='2026-02-01')
 dates = plt.datetimes_to_string(data.index)
 data = data.reset_index(drop=True)
 
+plt.date_form('d/m/Y')
+plt.theme('dark')
 plt.candlestick(dates, data)
 
 ticker = yf.Ticker(ISIN)
