@@ -1,6 +1,7 @@
  {
-    "Airbus": {"isin": "NL0000235190", "stueckzahl": 100, "kurs_beobachtung": 33.33},
-    "Allianz": {"isin": "DE0008404005", "stueckzahl": 110, "kurs_beobachtung": 44.44},
-    "BASF": {"isin": "DE000BASF111", "stueckzahl": 120, "kurs_beobachtung": 55.55},
-    "Bayer": {"isin": "DE000BAY0017", "stueckzahl": 130, "kurs_beobachtung": 66.66}
+    "Airbus": {"isin": "NL0000235190", "stueckzahl": 50, "kurs_beobachtung": 150.00},
+    "Allianz": {"isin": "DE0008404005", "stueckzahl": 10, "kurs_beobachtung": 370.00},
+    "BASF": {"isin": "DE000BASF111", "stueckzahl": 100, "kurs_beobachtung": 50.00},
+    "iShares Core MSCI World UCITS ETF USD Acc": {"isin": "IE00B4L5Y983", "stueckzahl": 300.00, "kurs_beobachtung": 95.00},
+    "iShares MSCI Emerging Markets ETF": {"isin": "US4642872349", "stueckzahl": 200.00, "kurs_beobachtung": 55.00}
 }

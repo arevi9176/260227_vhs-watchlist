@@ -135,6 +135,7 @@ class PortfolioManager:
         self.update()
         table = Table(title=self.name, box=box.HEAVY_EDGE)
         table.add_column("Name", justify="left", style="cyan", no_wrap=True)
+        table.add_column("ISIN", justify="left", style="white")
         table.add_column("Anzahl", justify="right", style="magenta")
         table.add_column("Währung", justify="right", style="green")
         table.add_column("BK", justify="right", style="yellow")
@@ -151,7 +152,7 @@ class PortfolioManager:
             we_gesamt_color = "red" if el.wertenwicklung_gesamt < 0 else "green"
             we_gesamt_prz_color = "red" if el.wertenwicklung_gesamt_prozent < 0 else "green"
             table.add_row(
-                el.name,
+                el.name, el.isin,
                 f"{el.stueckzahl:.1f}", el.waehrung, f"{el.kurs_beobachtung:.2f}", f"{el.wert_beobachtung:.2f}",
                 f"{el.kurs_aktuell:.2f}", f"{el.wert_aktuell:.2f}",
                 f"[{we_tag_color}]{el.wertenwicklung_tag:.2f}[/{we_tag_color}]",
@@ -165,10 +166,59 @@ class PortfolioManager:
         print(f"  Portfolio aktueller Gesamtwert [EUR]: {self.portfolio_wert_aktuell:10.2f}")
         print(f" Portfolio Gesamtwertentwicklung [EUR]: {self.portfolio_wertenwicklung_gesamt:10.2f} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
         print(f"  Portfolio Tageswertentwicklung [EUR]: {self.portfolio_wertenwicklung_tag:10.2f} ({self.portfolio_wertenwicklung_tag_prozent:.2f}%)")
+        print()
 
+    def ask_ai(self, zeithorizont_in_jahren:int=10, risikoprofil:str="gering") -> None:
+        """Fragt die KI nach einer Einschätzung zum Portfolio, z.B. in Bezug auf die aktuelle Marktsituation oder mögliche Anlagestrategien."""
+        sys_msg = (
+            "Du bist ein Experte für Aktien, ETF's und Anlagestrategien.\n"
+            "Bewerte das folgende Aktien/ETF Portfolio in Bezug auf Chancen und Risiken für einen Vermögensaufbau.\n"
+            f"Zeithorizont: {zeithorizont_in_jahren} Jahre.\n"
+            f"Risikoprofil: {risikoprofil}.\n"
+        )
+        msg = ["Das Portfolio besteht aus folgenden Elementen:"]
+        for element in self.elements:
+            msg.append(
+                f"- {element.name} (ISIN: {element.isin}, "
+                f"Portfolioanteil: {element.wert_aktuell / self.portfolio_wert_aktuell * 100:.1f} %, "
+                f"Kaufkurs: {element.kurs_beobachtung:.1f} EUR, "
+                f"Aktueller Kurs: {element.kurs_aktuell:.1f} EUR)"
+            )
+
+        print(sys_msg)
+        print("\n".join(msg))
+
+        import json
+
+        with open("secrets.json") as f:
+            secrets = json.load(f)
+            
+        GOOGLE_API_KEY = secrets.get("GOOGLE_API_KEY")
+
+        from langchain_google_genai import ChatGoogleGenerativeAI
+
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            api_key=GOOGLE_API_KEY,
+        )
+
+        from langchain_core.messages import SystemMessage, HumanMessage
+        system_msg = SystemMessage(sys_msg)
+        human_msg = HumanMessage("\n".join(msg))
+
+        messages = [system_msg, human_msg]
+        response = llm.invoke(messages)
+
+        from rich.console import Console
+        from rich.markdown import Markdown
+
+        console = Console()
+        md = Markdown(response.content)
+        console.print(md)
 
 if __name__ == "__main__":
 
     portfolio = PortfolioManager("Mein Portfolio")
     portfolio.load_from_json("portfolio.json")
     portfolio.info()
+    portfolio.ask_ai(zeithorizont_in_jahren=15, risikoprofil="mittel")
