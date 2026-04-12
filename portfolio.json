@@ -1,7 +1,6 @@
-{
-    "DE000A1EWWW0": {"name": "adidas", "stueckzahl": 22, "kurs_beobachtung": 140.0},
-    "DE000BASF111": {"name": "BASF", "stueckzahl": 20, "kurs_beobachtung": 55.0},
-    "DE0007164600": {"name": "SAP", "stueckzahl": 32, "kurs_beobachtung": 180.0},
-    "DE000CBK1001": {"name": "Commerzbank", "stueckzahl": 100, "kurs_beobachtung": 25.0},
-    "US0378331005": {"name": "Apple", "stueckzahl": 50, "kurs_beobachtung": 30.0}
+ {
+    "Airbus": {"isin": "NL0000235190", "stueckzahl": 100, "kurs_beobachtung": 33.33},
+    "Allianz": {"isin": "DE0008404005", "stueckzahl": 110, "kurs_beobachtung": 44.44},
+    "BASF": {"isin": "DE000BASF111", "stueckzahl": 120, "kurs_beobachtung": 55.55},
+    "Bayer": {"isin": "DE000BAY0017", "stueckzahl": 130, "kurs_beobachtung": 66.66}
 }

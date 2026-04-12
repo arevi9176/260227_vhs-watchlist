@@ -21,7 +21,7 @@ class PortfolioElement:
     """
 
     def __init__(self, isin: str, stueckzahl: float, kurs_beobachtung:float):
-
+        """Initialisiert ein Portfolio-Element mit der angegebenen ISIN, Stückzahl und Beobachtungskurs."""
         self.isin = isin
         self.stueckzahl = stueckzahl
         self.kurs_beobachtung = kurs_beobachtung
@@ -37,6 +37,7 @@ class PortfolioElement:
         self.update()
   
     def update(self) -> None:
+        """Aktualisiert die Werte des Portfolio-Elements, z.B. durch Abrufen der aktuellen Kurse und Berechnung der Wertentwicklung."""
         self.wecheselkurs = hole_wechselkurs(self.waehrung)
         self.kurs_aktuell = self.ticker.info["regularMarketPrice"] * self.wecheselkurs
         self.kurs_schluss = self.ticker.info["previousClose"] * self.wecheselkurs
@@ -62,6 +63,7 @@ class PortfolioElement:
 
 
     def info(self) -> None:
+        """Gibt eine Übersicht über das Portfolio-Element aus"""
         print(f"              ISIN: {self.isin}")
         print(f"              Name: {self.name}")
         print(f"           Währung: {self.waehrung}")
@@ -86,9 +88,31 @@ class PortfolioManager:
         self.elements = []
 
     def add(self, element: PortfolioElement) -> None:
+        """Fügt ein Portfolio-Element zum Portfolio hinzu."""
         self.elements.append(element)
 
+    def load_from_json(self, filename: str) -> None:
+        """Einlesen der Daten aus der JSON-Datei"""
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        # Iteration über die Daten und Hinzufügen von Portfolio-Elementen zum Portfolio-Manager
+        for name, details in data.items():
+            self.add(PortfolioElement(details["isin"], details["stueckzahl"], details["kurs_beobachtung"]))
+
+    def save(self, filename: str) -> None:
+        """Speichern der Daten in einer JSON-Datei"""
+        data = {}
+        for element in self.elements:
+            data[element.isin] = {
+                "name": element.name,
+                "stueckzahl": element.stueckzahl,
+                "kurs_beobachtung": element.kurs_beobachtung
+            }
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=4)
+
     def update(self) -> None:
+        """Aktualisiert die Werte aller Portfolio-Elemente und berechnet die Gesamtwerte für das Portfolio."""
         self.portfolio_wert_beobachtung = 0
         self.portfolio_wert_aktuell = 0
         self.portfolio_wertenwicklung_gesamt = 0
@@ -107,6 +131,7 @@ class PortfolioManager:
         self.portfolio_wertenwicklung_gesamt_prozent = self.portfolio_wertenwicklung_gesamt / self.portfolio_wert_beobachtung * 100
 
     def info(self) -> None:
+        """Gibt eine Übersicht über das Portfolio aus, z.B. in Form einer Tabelle."""
         self.update()
         table = Table(title=self.name, box=box.HEAVY_EDGE)
         table.add_column("Name", justify="left", style="cyan", no_wrap=True)
@@ -141,38 +166,9 @@ class PortfolioManager:
         print(f" Portfolio Gesamtwertentwicklung [EUR]: {self.portfolio_wertenwicklung_gesamt:10.2f} ({self.portfolio_wertenwicklung_gesamt_prozent:.2f}%)")
         print(f"  Portfolio Tageswertentwicklung [EUR]: {self.portfolio_wertenwicklung_tag:10.2f} ({self.portfolio_wertenwicklung_tag_prozent:.2f}%)")
 
-    def load(self, filename: str) -> None:
-        with open(filename, 'r') as f:
-            data = json.load(f)
-        for isin, details in data.items():
-            pe = PortfolioElement(isin, details["stueckzahl"], details["kurs_beobachtung"])
-            self.add(pe)
-
-    def save(self, filename: str) -> None:
-        data = {}
-        for element in self.elements:
-            data[element.isin] = {
-                "name": element.name,
-                "stueckzahl": element.stueckzahl,
-                "kurs_beobachtung": element.kurs_beobachtung
-            }
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
-
 
 if __name__ == "__main__":
 
-    pe1 = PortfolioElement("DE000A1EWWW0", 20, 140.0)      # adidas
-    pe2 = PortfolioElement("DE000BASF111", 20, 55.0)       # BASF
-    pe3 = PortfolioElement("DE0007164600", 32, 180.0)      # SAP
-    pe4 = PortfolioElement("DE000CBK1001", 100, 25.0)      # Commerzbank
-    pe5 = PortfolioElement("US0378331005", 50, 30.0)       # Apple
-
     portfolio = PortfolioManager("Mein Portfolio")
-    # portfolio.add(pe1)
-    # portfolio.add(pe2)
-    # portfolio.add(pe3)
-    # portfolio.add(pe4)
-    # portfolio.add(pe5)
-    portfolio.load("portfolio.json")
+    portfolio.load_from_json("portfolio.json")
     portfolio.info()
